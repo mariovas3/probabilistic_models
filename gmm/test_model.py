@@ -3,7 +3,8 @@ from model import GMM
 
 num_mixtures = 2
 N, d = 5, 3
-gmm = GMM(num_mixtures, 42)
+cov_reg = 1e-5
+gmm = GMM(num_mixtures, 42, cov_reg=cov_reg)
 X = np.random.normal(2, 4, size=(N, d))
 gmm._init_params(d)
 R = gmm._compute_many_gaussians(X)
@@ -45,11 +46,14 @@ def test_update_prior_weights():
 
 def test_update_covariances():
     covs = [np.zeros((d, d)) for j in range(num_mixtures)]
+    a = np.arange(d).reshape((-1, 1))
+    mask = a == a.T
     for j in range(num_mixtures):
         rj_sum = gmm.posterior_weights_matrix[j, :].sum()
         for i in range(N):
             u = (X[i, :] - gmm.means[j, :]).reshape((-1, 1))
             covs[j] += gmm.posterior_weights_matrix[j, i] * u @ u.T / rj_sum
+        covs[j][mask] = covs[j][mask] + gmm.cov_reg
     # update my covariances stored in the gmm object;
     gmm._update_covariances(X)
     result = [(covs[i].round(5) == gmm.covariances[i].round(5)).sum()
