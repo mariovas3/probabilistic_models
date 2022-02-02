@@ -11,7 +11,7 @@ class GMM:
         self.prior_weights = None
         self.determinants = None
         self.inverses = None
-        self.R_res = None
+        self.posterior_weights_matrix = None
 
     def _init_params(self, dimensions: int):
         # uninformative prior;
@@ -52,7 +52,7 @@ class GMM:
              # compute Gaussian pdfs multiplied by prior weights
              # on each row/observation;
              R[j, :] = np.apply_along_axis(self._compute_gaussian, axis=1, idx=j, arr=X)
-        self.R_res = R / R.sum(0)
+        self.posterior_weights_matrix = R / R.sum(0)
         return R
 
     def _compute_log_likelihood(self, R):
@@ -60,13 +60,13 @@ class GMM:
         return np.log(R.sum(0)).sum()
 
     def _update_prior_weights(self):
-        assert self.R_res is not None
-        self.prior_weights = self.R_res.sum(1) / self.R_res.shape[1]
+        assert self.posterior_weights_matrix is not None
+        self.prior_weights = self.posterior_weights_matrix.sum(1) / self.posterior_weights_matrix.shape[1]
 
     def _update_covariances(self, X):
-        assert self.R_res is not None
+        assert self.posterior_weights_matrix is not None
         for j in range(self.num_mixtures):
-            rj = self.R_res[j, :].reshape((-1, 1))
+            rj = self.posterior_weights_matrix[j, :].reshape((-1, 1))
             X_tilde = rj * (X - self.means[j, :])
             # here this is a neat trick since in the Deisenroth book
             # the update of an individual covariance matrix is given as a
@@ -77,10 +77,10 @@ class GMM:
             self.covariances[j] = (X_tilde.T @ (X - self.means[j, :])) / rj.sum()
 
     def _update_means(self, X):
-        assert self.R_res is not None
+        assert self.posterior_weights_matrix is not None
         # since mu_j^T = (X.T @ rj) ^ T / rj.sum()
-        # here R_res is (num_mixtures, N);
-        self.means = (self.R_res @ X) / self.R_res.sum(1).reshape((-1, 1))
+        # here posterior_weights_matrix is (num_mixtures, N);
+        self.means = (self.posterior_weights_matrix @ X) / self.posterior_weights_matrix.sum(1).reshape((-1, 1))
 
     def fit(self, X: np.ndarray):
         raise NotImplementedError

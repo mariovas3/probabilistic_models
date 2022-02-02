@@ -19,9 +19,9 @@ def test_init_params():
 
 def test_compute_many_gaussians():
     assert (R > 0).sum() == R.size
-    assert all(gmm.R_res.sum(0).round(5) == 1)
-    assert gmm.R_res.sum() == N
-    assert gmm.R_res.shape == (num_mixtures, N)
+    assert all(gmm.posterior_weights_matrix.sum(0).round(5) == 1)
+    assert gmm.posterior_weights_matrix.sum() == N
+    assert gmm.posterior_weights_matrix.shape == (num_mixtures, N)
 
 
 def test_compute_log_likelihood():
@@ -38,7 +38,7 @@ def test_compute_log_likelihood():
 def test_update_prior_weights():
     p = np.empty(num_mixtures)
     for j in range(num_mixtures):
-        p[j] = gmm.R_res[j, :].sum() / N
+        p[j] = gmm.posterior_weights_matrix[j, :].sum() / N
     gmm._update_prior_weights()
     assert (p.round(5) == gmm.prior_weights.round(5)).all()
 
@@ -46,10 +46,10 @@ def test_update_prior_weights():
 def test_update_covariances():
     covs = [np.zeros((d, d)) for j in range(num_mixtures)]
     for j in range(num_mixtures):
-        rj_sum = gmm.R_res[j, :].sum()
+        rj_sum = gmm.posterior_weights_matrix[j, :].sum()
         for i in range(N):
             u = (X[i, :] - gmm.means[j, :]).reshape((-1, 1))
-            covs[j] += gmm.R_res[j, i] * u @ u.T / rj_sum
+            covs[j] += gmm.posterior_weights_matrix[j, i] * u @ u.T / rj_sum
     # update my covariances stored in the gmm object;
     gmm._update_covariances(X)
     result = [(covs[i].round(5) == gmm.covariances[i].round(5)).sum()
@@ -60,9 +60,9 @@ def test_update_covariances():
 def test_update_means():
     mus = np.zeros((num_mixtures, d))
     for j in range(num_mixtures):
-        rj_sum = gmm.R_res[j, :].sum()
+        rj_sum = gmm.posterior_weights_matrix[j, :].sum()
         for i in range(N):
-            mus[j] += gmm.R_res[j, i] * X[i, :] / rj_sum
+            mus[j] += gmm.posterior_weights_matrix[j, i] * X[i, :] / rj_sum
     # update my means stored in the gmm object;
     gmm._update_means(X)
     result = [(mus[j, :].round(5) == gmm.means[j, :].round(5)).sum()
