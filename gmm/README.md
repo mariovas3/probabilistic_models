@@ -4,7 +4,7 @@
 
 ### Example of fitted GMM:
 
-[alt text](https://github.com/mariovas3/probabilistic_models/blob/master/gmm/gmm_on_iris.png)
+![alt text](https://github.com/mariovas3/probabilistic_models/blob/master/gmm/gmm_on_iris.png)
 
 
 ## The fitting procedure:
