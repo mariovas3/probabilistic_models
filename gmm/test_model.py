@@ -15,7 +15,7 @@ def test_init_params():
     assert gmm._means.shape == (num_mixtures, d)
     eigvals = np.concatenate([np.linalg.eigvals(sigma) for sigma in gmm._covariances])
     assert all(eigvals > 0)
-    assert all(np.array(gmm.determinants) > 0)
+    assert all(np.array(gmm._determinants) > 0)
 
 
 def test_compute_many_gaussians():
