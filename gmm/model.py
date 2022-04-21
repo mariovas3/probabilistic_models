@@ -304,8 +304,8 @@ class GMM:
         for t in range(self.max_iter):
             try:
                 self._update_prior_weights()
+                self._update_means(X_std)  # update means before covariances;
                 self._update_covariances(X_std)
-                self._update_means(X_std)
                 self._determinants = [np.linalg.det(sigma) for sigma in self._covariances]
                 self._inverses = [np.linalg.inv(sigma) for sigma in self._covariances]
                 R = self._compute_many_gaussians(X_std)
