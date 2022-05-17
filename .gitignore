@@ -1,3 +1,6 @@
-gmm/__pycache__
-.ipynb_checkpoints
-gmm/.ipynb_checkpoints
+# ignore jupyter related stuff;
+*__pycache__
+*.ipynb_checkpoints
+
+# Ignore python venv;
+env
