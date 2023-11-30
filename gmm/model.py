@@ -5,7 +5,7 @@ from base.model_abcs import MixtureModel
 
 
 class GMM(MixtureModel):
-    def __init__(self, n_components, tol=1e-8, maxiter=500, random_state=0):
+    def __init__(self, n_components, tol=1e-8, maxiter=100, random_state=0):
         self._n_components = n_components
         self._tol, self._maxiter = tol, maxiter
         self._random_state = random_state
