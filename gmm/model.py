@@ -50,7 +50,7 @@ class GMM(MixtureModel):
         return self.n_components
 
     def __getitem__(self, idx):
-        return self.priors[idx], self.means[idx], self.Covs[idx]
+        return self.priors[idx][0], self.means[idx], self.Covs[idx]
 
     def _Estep(self, X):
         # work in log joint space and then call softmax;
@@ -59,10 +59,8 @@ class GMM(MixtureModel):
             np.concatenate(
                 [
                     # gets log-gauss-pdf + log prior;
-                    multivariate_normal.logpdf(
-                        x=X, mean=self._means[i], cov=self._Covs[i]
-                    )[None, :]
-                    for i in range(self.n_components)
+                    multivariate_normal.logpdf(x=X, mean=m, cov=S)[None, :]
+                    for _, m, S in self
                 ]
             )
             + np.log(self.priors),
@@ -78,17 +76,17 @@ class GMM(MixtureModel):
         self._means = R @ X
         X = X[None, :, :] - self._means[:, None, :]
         # list of DxD arrays;
-        self._Covs = [X[i].T @ (X[i] * R[i][:, None]) for i in range(len(R))]
+        self._Covs = [
+            X[i].T @ (X[i] * R[i][:, None]) for i in range(len(self))
+        ]
 
     def log_lik(self, X):
         marginals = (
             self.priors
             * np.concatenate(
                 [
-                    multivariate_normal.pdf(
-                        x=X, mean=self.means[i], cov=self.Covs[i]
-                    )[None, :]
-                    for i in range(len(self.priors))
+                    multivariate_normal.pdf(x=X, mean=m, cov=S)[None, :]
+                    for _, m, S in self
                 ]
             )
         ).sum(0)
@@ -126,10 +124,8 @@ class GMM(MixtureModel):
         return softmax(
             np.concatenate(
                 [
-                    multivariate_normal.logpdf(
-                        x=X, mean=self.means[i], cov=self.Covs[i]
-                    )[None, :]
-                    for i in range(self.n_components)
+                    multivariate_normal.logpdf(x=X, mean=m, cov=S)[None, :]
+                    for _, m, S in self
                 ]
             )
             + np.log(self.priors),
