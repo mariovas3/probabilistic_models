@@ -5,7 +5,7 @@ from math import sqrt
 np.random.seed(0)
 
 
-@fixture(scope='session')
+@fixture(scope="session")
 def gmm_data():
     means = np.array([[5.0, 5.0], [-5.0, 5.0], [0.0, -5.0]])
 
@@ -26,6 +26,20 @@ def gmm_data():
         ]
     )
     return data
+
+
+@fixture(scope="module")
+def warm_params():
+    priors = np.ones((3, 1)) / 3
+    means = np.array([[4.0, 6.0], [-6.0, 4.0], [-1.0, -6.0]])
+    Covs = [np.eye(2) for _ in range(3)]
+    return dict(priors=priors, means=means, Covs=Covs)
+
+
+@fixture(scope="module")
+def warm_params_bad_example():
+    priors = np.ones((3, 1)) / 3
+    return dict(priors=priors, means=None, Covs=None)
 
 
 @fixture

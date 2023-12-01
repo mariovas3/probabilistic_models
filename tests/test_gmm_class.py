@@ -33,3 +33,27 @@ def test_plotting(gmm_data):
         facecolor="none",
         edgecolors=("firebrick",) * 3,
     )
+
+
+def test_warm_start(gmm_data, warm_params):
+    model = GMM(3, **warm_params)
+    model.fit(gmm_data)
+
+    classes = model.predict(gmm_data)
+    plot_ci(
+        "ci_plots_warm_start.png",
+        X=gmm_data,
+        predictions=classes,
+        gmm_model=model,
+        stds=(1, 2, 3),
+        facecolor="none",
+        edgecolors=("firebrick",) * 3,
+    )
+
+
+def test_warm_start_bad_example(warm_params_bad_example):
+    try:
+        model = GMM(3, **warm_params_bad_example)
+        raise AssertionError("shouldn't reach this")
+    except ValueError as e:
+        print(e)

@@ -1,18 +1,45 @@
 import numpy as np
 from scipy.special import softmax
 from scipy.stats import multivariate_normal
+from typing import Optional, List
 from base.model_abcs import MixtureModel
 
 
 class GMM(MixtureModel):
-    def __init__(self, n_components, tol=1e-8, maxiter=100, random_state=0):
+    def __init__(
+        self,
+        n_components,
+        tol=1e-8,
+        maxiter=100,
+        random_state=0,
+        priors: Optional[np.ndarray] = None,
+        means: Optional[np.ndarray] = None,
+        Covs: Optional[List[np.ndarray]] = None,
+    ):
         self._n_components = n_components
         self._tol, self._maxiter = tol, maxiter
         self._random_state = random_state
         self._converged = False
-        self._priors, self._means, self._Covs = None, None, None
+        self._priors, self._means, self._Covs = priors, means, Covs
+        self.init_is_given = self._check_init()
         self._last_iter = None
         np.random.seed(random_state)
+
+    def _check_init(self):
+        valid = (
+            self.priors is not None
+            and self.means is not None
+            and self.Covs is not None
+        )
+        if not valid and (
+            self.priors is not None
+            or self.means is not None
+            or self.Covs is not None
+        ):
+            raise ValueError(
+                "either all params are " "given or no params are given"
+            )
+        return valid
 
     @property
     def converged(self):
@@ -103,12 +130,22 @@ class GMM(MixtureModel):
         return l
 
     def fit(self, X):
-        log_lik1, log_lik2 = None, self.random_init(X)
+        # see how to initialise;
+        if self.init_is_given:
+            log_lik1, log_lik2 = None, self.log_lik(X)
+        else:
+            log_lik1, log_lik2 = None, self.random_init(X)
+
+        # do EM;
         for it in range(self.maxiter):
             R = self._Estep(X)
             self._Mstep(X, R)
+
+            # update log likelihood;
             log_lik1, log_lik2 = log_lik2, self.log_lik(X)
             assert log_lik1 <= log_lik2
+
+            # see if change is insignificant;
             if abs(log_lik1 - log_lik2) < self.tol:
                 print(f"fitting reached tol at iter: {it + 1}.")
                 self._converged = True
