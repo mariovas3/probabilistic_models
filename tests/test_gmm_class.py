@@ -1,7 +1,13 @@
-from gmm.model import GMM
 import matplotlib.pyplot as plt
 
+plt.style.use("dark_background")
+import pytest
 
+from gmm.model import GMM
+from gmm.plotting_funcs import plot_ci
+
+
+@pytest.mark.e2e
 def test_GMM(gmm_data):
     model = GMM(n_components=3)
     model.fit(gmm_data)
@@ -12,13 +18,18 @@ def test_GMM(gmm_data):
     assert mean_k.ndim == 1 and len(mean_k) == 2
     assert Cov_k.shape == (2, 2)
 
-    # save plot of predictions;
+
+def test_plotting(gmm_data):
+    model = GMM(n_components=3)
+    model.fit(gmm_data)
+
     classes = model.predict(gmm_data)
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.scatter(gmm_data[:, 0], gmm_data[:, 1], c=classes)
-    ax.set_title(
-        f"converged: {model.converged}; last_iter: {model.last_iter}"
+    plot_ci(
+        "ci_plots.png",
+        X=gmm_data,
+        predictions=classes,
+        gmm_model=model,
+        stds=(1, 2, 3),
+        facecolor="none",
+        edgecolors=("firebrick",) * 3,
     )
-    fig.tight_layout()
-    plt.savefig("bob.png")
-    plt.close()

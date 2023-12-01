@@ -5,7 +5,7 @@ from math import sqrt
 np.random.seed(0)
 
 
-@fixture
+@fixture(scope='session')
 def gmm_data():
     means = np.array([[5.0, 5.0], [-5.0, 5.0], [0.0, -5.0]])
 
