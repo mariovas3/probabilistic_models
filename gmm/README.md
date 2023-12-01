@@ -10,6 +10,7 @@
 			0
 		)
 	```
+* From tag `v1` you can also pass parameters as initial point to warm start the model.
 
 ### Example of fitted GMM:
 
