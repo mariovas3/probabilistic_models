@@ -18,8 +18,13 @@ def get_ellipses(gmm_model, ax, n_stds=1, facecolor="none", **kwargs):
             Ellipse(
                 (m[0], m[1]),
                 # eigvals of Precision are inverse eigvals of Cov;
-                width=sqrt(eig_pairs.eigenvalues[0] * n_stds),
-                height=sqrt(eig_pairs.eigenvalues[1] * n_stds),
+                # eigvec.T @ Precision @ eigvec = 1 / eigval
+                # eigval * eigvec.T @ Precision @ eigvec = 1
+                # (n_stds ^ 2) * eigval * eigvec.T @ Precision @ eigvec = n_stds ^ 2
+                # so you need x = n_stds * sqrt(eigval) * eigvec
+                # such that x.T @ Precision @ x = n_stds ^ 2;
+                width=sqrt(eig_pairs.eigenvalues[0]) * n_stds,
+                height=sqrt(eig_pairs.eigenvalues[1]) * n_stds,
                 angle=angle,
                 facecolor=facecolor,
                 **kwargs,
