@@ -12,6 +12,7 @@ class GMM(MixtureModel):
         tol=1e-8,
         maxiter=100,
         random_state=0,
+        diag_offset=1e-6,
         priors: Optional[np.ndarray] = None,
         means: Optional[np.ndarray] = None,
         Covs: Optional[List[np.ndarray]] = None,
@@ -19,6 +20,7 @@ class GMM(MixtureModel):
         self._n_components = n_components
         self._tol, self._maxiter = tol, maxiter
         self._random_state = random_state
+        self._diag_offset = diag_offset
         self._converged = False
         self._priors, self._means, self._Covs = priors, means, Covs
         self.init_is_given = self._check_init()
@@ -96,15 +98,21 @@ class GMM(MixtureModel):
 
     def _Mstep(self, X, R):
         # X is NxD and R is KxN
+        # update priors;
         self._priors = R.mean(-1, keepdims=True)
+
+        # update means;
         R = R / R.sum(-1, keepdims=True)
         # is KxD array;
         assert R.shape[-1] == len(X)
         self._means = R @ X
+
+        # update covariances;
+        offset = self._diag_offset * np.eye(X.shape[-1])
         X = X[None, :, :] - self._means[:, None, :]
         # list of DxD arrays;
         self._Covs = [
-            X[i].T @ (X[i] * R[i][:, None]) for i in range(len(self))
+            X[i].T @ (X[i] * R[i][:, None]) + offset for i in range(len(self))
         ]
 
     def log_lik(self, X):
