@@ -65,12 +65,11 @@ def fit_model(verbose=False):
     joblib.dump(model, MODELS_PATH / f"gmm-{now}.joblib")
 
 
-def get_predictions(data: namedtuple) -> Dict[str, float]:
-    model_file = MODELS_PATH / f"gmm-{now}.joblib"
-    if not model_file.exists():
+def get_predictions(model_path: Path, data: namedtuple) -> Dict[str, float]:
+    if not model_path.exists():
         raise FileNotFoundError
 
-    model = joblib.load(model_file)
+    model = joblib.load(model_path)
 
     predictions = model.predict(data.coords)
-    return {ds: group for ds, group in zip(data.dates, predictions)}
+    return {ds: str(group) for ds, group in zip(data.dates, predictions)}

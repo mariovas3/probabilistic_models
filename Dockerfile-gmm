@@ -2,16 +2,16 @@ FROM python:3.10.13-slim as builder
 
 WORKDIR /model
 
-COPY requirements-gmm.txt .
+COPY requirements-gmm-flask.txt .
 
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /model/wheels -r requirements-gmm.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /model/wheels -r requirements-gmm-flask.txt
 
 FROM python:3.10.13-slim
 
 WORKDIR /model
 
 COPY --from=builder /model/wheels /wheels
-COPY --from=builder /model/requirements-gmm.txt .
+COPY --from=builder /model/requirements-gmm-flask.txt .
 
 RUN pip install --no-cache /wheels/*
 
