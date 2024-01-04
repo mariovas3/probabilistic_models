@@ -1,7 +1,9 @@
+from typing import List, Optional
+
 import numpy as np
 from scipy.special import softmax
 from scipy.stats import multivariate_normal
-from typing import Optional, List
+
 from base.model_abcs import MixtureModel
 
 
@@ -163,13 +165,22 @@ class GMM(MixtureModel):
     def predict(self, X):
         return self.predict_proba(X).argmax(0)
 
+    @staticmethod
+    def _float_to_np_array(x):
+        # the scipy logpdf calls a squeeze function before
+        # returning, so if single observation, will return float
+        # and not np.ndarray, which can't work with [None, :].
+        return np.array([x]) if isinstance(x, float) else x
+
     def predict_proba(self, X):
         if X.ndim == 1:
             X = X[None, :]
         return softmax(
             np.concatenate(
                 [
-                    multivariate_normal.logpdf(x=X, mean=m, cov=S)[None, :]
+                    self._float_to_np_array(
+                        multivariate_normal.logpdf(x=X, mean=m, cov=S)
+                    )[None, :]
                     for _, m, S in self
                 ]
             )

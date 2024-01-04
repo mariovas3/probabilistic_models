@@ -1,8 +1,23 @@
-from pytest import fixture
-import numpy as np
+import datetime
+from collections import namedtuple
 from math import sqrt
 
+import numpy as np
+from pytest import fixture
+
 np.random.seed(0)
+
+
+@fixture(scope="module")
+def gmm_json_data():
+    now = datetime.datetime.now()
+    td = datetime.timedelta(minutes=1)
+    dates = [
+        (now + i * td).strftime("%Y-%m-%d-%H-%M-%S") for i in range(1, 5)
+    ]
+    coords = np.array([(3.4, 3.4), (-4, 4), (0, -5), (2.8, 1)])
+    json_data = namedtuple("json_data", "dates,coords")
+    return json_data(dates=dates, coords=coords)
 
 
 @fixture(scope="session")
