@@ -11,12 +11,14 @@
         <th><em>Inputs</em></th>
         <th><em>Class</em></th>
     </tr>
-    {% for item in db %}
-        <tr>
-            {% for item2 in item %}
-                <td>{{ item2 }}</td>
-            {% endfor %}
-        </tr>
-    {% endfor %}
+    {% if db %}
+        {% for item in db %}
+            <tr>
+                {% for item2 in item %}
+                    <td>{{ item2 }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    {% endif %}
 </table>
 {% endblock %}
