@@ -7,7 +7,7 @@ def test_fit_predict(gmm_json_data):
 
     # predict on data;
     out = model.get_predictions(
-        model_path=model.MODELS_PATH / f"gmm-{model.now}.joblib",
+        model_path=model.MODELS_PATH / f"gmm.joblib",
         data=gmm_json_data,
     )
     assert isinstance(out, dict)

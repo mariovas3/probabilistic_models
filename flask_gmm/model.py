@@ -40,12 +40,15 @@ def gmm_data():
     return data
 
 
-def fit_model(verbose=False):
+def fit_model(data_path=None, verbose=False, n_components=3):
     # get data;
-    data = gmm_data()
+    if data_path is None:
+        data = gmm_data()
+    else:
+        data = np.loadtxt(data_path, delimiter=",")
 
     # fit model;
-    model = GMM(n_components=3)
+    model = GMM(n_components=n_components)
     model.fit(data)
 
     # save plot of gmm fit;
@@ -62,7 +65,7 @@ def fit_model(verbose=False):
         )
 
     # persist model;
-    joblib.dump(model, MODELS_PATH / f"gmm-{now}.joblib")
+    joblib.dump(model, MODELS_PATH / "gmm.joblib")
 
 
 def get_predictions(model_path: Path, data: namedtuple) -> Dict[str, float]:

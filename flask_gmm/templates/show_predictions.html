@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block styling %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/show_predictions.css') }}"/>
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th><em>Date</em></th>
+        <th><em>Inputs</em></th>
+        <th><em>Class</em></th>
+    </tr>
+    {% for item in db %}
+        <tr>
+            {% for item2 in item %}
+                <td>{{ item2 }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
