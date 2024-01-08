@@ -2,8 +2,8 @@
 
 {% block content %}
 <form method="post">
-    <label for="coords">2D Coordinates up to 3 decimals<em>(required):</em></label>
-    <input type="text" name="coords" id="coords" value="4.,3.123," required pattern="^(-?[0-9]\.([0-9]){0,3},){2}$"/><br/>
+    <label for="coords">2D Coordinates up to 3 decimals <em>(required):</em></label>
+    <input type="text" name="coords" id="coords" value="-4.,3.123," required pattern="^(-?[0-9]\.([0-9]){0,3},){2}$"/><br/>
     <button type="submit">Submit</button>
 </form>
 {% endblock %}

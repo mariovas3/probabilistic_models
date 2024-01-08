@@ -1,10 +1,11 @@
 .git
 flask_gmm
+tests
 gmm
 *.png
-tests
 base
 .pytest_cache
 bayesian_linear_reg
 README.md
 env
+*/__pycache__
