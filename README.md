@@ -15,5 +15,6 @@
 
 ### Currently has:
 * [Gaussian Mixture Model](https://github.com/mariovas3/probabilistic_models/tree/master/gmm)
+* [Flask deployment of GMM](https://github.com/mariovas3/probabilistic_models/tree/master/flask_gmm)
 * [Bayesian Linear Regression](https://github.com/mariovas3/probabilistic_models/tree/master/bayesian_linear_reg)
 

@@ -24,11 +24,13 @@ From the browser, the form looks like this:
 
 <img src="./flask_gmm_predict_default.png" alt="Form to enter two comma separated floats (and a trailing comma) within 3 decimals of precision." />
 
-Example of client side validation because a 4-decimal float was entered when we only support up to 3 decimal places.:
+Example of client side validation because a 4-decimal float was entered when we only support up to 3 decimal places:
+
 <img src="./flask_gmm_predict_4_deci.png" alt="Client-side validation issue because a 4 decimal float was entered."/>
 
 ### The `/show_predictions` endpoint:
 The `/show_predictions` endpoint gives a table of recent predictions together with their inputs in reverse chronological order. An example table is shown below:
+
 <img src="./flask_gmm_show_predictions.png" alt="Table of date, input coordinates and predicted class columns."/>
 
 If no POST requests have been made yet, an empty table will be displayed.
